@@ -1,0 +1,42 @@
+version: "3"
+services:
+  PiHole:
+    container_name: PiHole
+    entrypoint:
+      - /s6-init
+    environment:
+      - TZ=Europe/London
+      - DNS1=192.168.1.1
+      - DNS2=no
+      - WEBPASSWORD=*******************
+      - PATH=/opt/pihole:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - ARCH=armhf
+      - UBUNTU_SUITE=stretch
+      - DOCKER_REPO=multiarch/debian-debootstrap
+      - S6OVERLAY_RELEASE=https://github.com/just-containers/s6-overlay/releases/download/v1.22.1.0/s6-overlay-arm.tar.gz
+      - PIHOLE_INSTALL=/root/ph_install.sh
+      - PHP_ENV_CONFIG=/etc/lighttpd/conf-enabled/15-fastcgi-php.conf
+      - PHP_ERROR_LOG=/var/log/lighttpd/error.log
+      - IPv6=True
+      - S6_LOGGING=0
+      - S6_KEEP_ENV=1
+      - S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+      - ServerIP=0.0.0.0
+      - FTL_CMD=no-daemon
+      - DNSMASQ_USER=root
+      - VERSION=v5.1.1
+    image: pihole/pihole:latest
+    ports:
+      - 443:443/tcp
+      - 53:53/tcp
+      - 53:53/udp
+      - 67:67/udp
+      - 80:80/tcp
+    restart: unless-stopped
+    volumes:
+      - /home/pi/.config/pihole/etc/dnsmasq.d:/etc/dnsmasq.d
+      - /home/pi/.config/pihole/etc/pihole:/etc/pihole
+
+# Windows Volumes
+#      - H:/Code/Docker/pihole/etc/dnsmasq.d:/etc/dnsmasq.d
+#      - H:/Code/Docker/pihole/etc/pihole:/etc/pihole
